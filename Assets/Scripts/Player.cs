@@ -35,12 +35,11 @@ public class Player : MonoBehaviour
     void Update()
     {
         handleInput();
-        handleMovement();
         handleRotation();
         handleAnimation();
-
+        handleMovement();
         handleGravity();
-        //handleJump();
+        handleJump();
         
     }
 
@@ -49,7 +48,18 @@ public class Player : MonoBehaviour
         currentMovementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         isRunPressed = Input.GetKey(KeyCode.LeftShift);
 
-        isJumpPressed = Input.GetKeyDown(KeyCode.Space);  
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            isJumpPressed = true;
+            Debug.Log(isJumpPressed);
+        }
+        else if (Input.GetKeyUp(KeyCode.Space))
+        { 
+            isJumpPressed = false;
+            Debug.Log(isJumpPressed);
+        }
+
+          
     }
 
     private void handleMovement()
@@ -74,7 +84,7 @@ public class Player : MonoBehaviour
     private void setupJumpVariables()
     {
         float timeToApex = maxJumpTime / 2;
-        gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
+        gravity = (-2 * maxJumpHeight) / (timeToApex * timeToApex);
         initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
 
     }
@@ -85,6 +95,11 @@ public class Player : MonoBehaviour
         {
             isJumping = true;
             currentMovement.y = initialJumpVelocity;
+            currentRunMovement.y = initialJumpVelocity;
+        }
+        else if (!isJumpPressed && isJumping && characterController.isGrounded)
+        {
+            isJumping = false;
         }
     }
 
@@ -100,8 +115,11 @@ public class Player : MonoBehaviour
         }
         else
         {
-            currentMovement.y += gravity;
-            currentRunMovement.y += groundedGravity;
+            float previousVelocity = currentMovement.y;
+            float newYVelocity = currentMovement.y + (gravity * Time.deltaTime);
+            float nextYVelocity = (previousVelocity + newYVelocity) * .5f;
+            currentMovement.y += nextYVelocity;
+            currentRunMovement.y += nextYVelocity;
         }
     }
 
