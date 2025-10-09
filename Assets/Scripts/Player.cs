@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
         handleRotation();
         handleAnimation();
 
-        //handleGravity();
+        handleGravity();
         //handleJump();
         
     }
@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
 
       if(isRunPressed) 
         { characterController.Move(currentRunMovement * Time.deltaTime); }
-      else 
+      else  
         { characterController.Move(currentMovement * Time.deltaTime); }
 
         //Debug.Log(String.Format("CurrentMovementInput x = {0} , y = {1} , z = {2}", currentMovementInput.x, currentMovementInput.y,"0"));
@@ -94,12 +94,14 @@ public class Player : MonoBehaviour
     private void handleGravity()
     {
         if (characterController.isGrounded)
-        {
+        { 
             currentMovement.y = groundedGravity;
+            currentRunMovement.y = groundedGravity;
         }
         else
         {
             currentMovement.y += gravity;
+            currentRunMovement.y += groundedGravity;
         }
     }
 
@@ -110,7 +112,7 @@ public class Player : MonoBehaviour
         Vector3 positionToLookAt;
         positionToLookAt.x = currentMovement.x;
         positionToLookAt.y = 0f;
-        positionToLookAt.z = currentMovement.y;
+        positionToLookAt.z = currentMovement.z;
 
         Quaternion currentRotation = transform.rotation;
 
