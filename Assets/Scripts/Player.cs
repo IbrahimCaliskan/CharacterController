@@ -18,48 +18,26 @@ public class Player : MonoBehaviour
     float gravity = -9.81f;
     float groundedGravity = -0.5f;
 
-    bool isJumpPressed = false;
-    float initialJumpVelocity;
-    float maxJumpHeight = 1.0f;
-    float maxJumpTime = 0.5f;
-    bool isJumping = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         characterController = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
-
-        setupJumpVariables();
     }
     void Update()
     {
         handleInput();
         handleRotation();
         handleAnimation();
-        handleMovement();
         handleGravity();
-        handleJump();
-        
+        handleMovement();
     }
 
     private void handleInput()
     {
         currentMovementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        isRunPressed = Input.GetKey(KeyCode.LeftShift);
-
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            isJumpPressed = true;
-            Debug.Log(isJumpPressed);
-        }
-        else if (Input.GetKeyUp(KeyCode.Space))
-        { 
-            isJumpPressed = false;
-            Debug.Log(isJumpPressed);
-        }
-
-          
+        isRunPressed = Input.GetKey(KeyCode.LeftShift);  
     }
 
     private void handleMovement()
@@ -72,38 +50,11 @@ public class Player : MonoBehaviour
         currentRunMovement.x = currentMovementInput.x * runMultiplier;
         currentRunMovement.z = currentMovementInput.y * runMultiplier;
 
-      if(isRunPressed) 
+        if (isRunPressed)
         { characterController.Move(currentRunMovement * Time.deltaTime); }
-      else  
+        else
         { characterController.Move(currentMovement * Time.deltaTime); }
-
-        //Debug.Log(String.Format("CurrentMovementInput x = {0} , y = {1} , z = {2}", currentMovementInput.x, currentMovementInput.y,"0"));
-        //characterController.Move(currentMovement * movementMultiplier * Time.deltaTime);
     }
-
-    private void setupJumpVariables()
-    {
-        float timeToApex = maxJumpTime / 2;
-        gravity = (-2 * maxJumpHeight) / (timeToApex * timeToApex);
-        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
-
-    }
-
-    void handleJump()
-    {
-        if (!isJumping && characterController.isGrounded && isJumpPressed)
-        {
-            isJumping = true;
-            currentMovement.y = initialJumpVelocity;
-            currentRunMovement.y = initialJumpVelocity;
-        }
-        else if (!isJumpPressed && isJumping && characterController.isGrounded)
-        {
-            isJumping = false;
-        }
-    }
-
-    // Update is called once per frame
 
 
     private void handleGravity()
@@ -115,11 +66,8 @@ public class Player : MonoBehaviour
         }
         else
         {
-            float previousVelocity = currentMovement.y;
-            float newYVelocity = currentMovement.y + (gravity * Time.deltaTime);
-            float nextYVelocity = (previousVelocity + newYVelocity) * .5f;
-            currentMovement.y += nextYVelocity;
-            currentRunMovement.y += nextYVelocity;
+            currentMovement.y = gravity;
+            currentRunMovement.y = gravity;
         }
     }
 
